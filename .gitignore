@@ -1,0 +1,23 @@
+# ===== Backend =====
+backend/target/
+*.class
+*.log
+
+# ===== Frontend =====
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Env / Secrets =====
+.env
+application-local.properties
+

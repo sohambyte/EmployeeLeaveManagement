@@ -105,32 +105,46 @@ function ApplyLeave() {
       });
   };
 
+  const fieldStyle = {
+    borderRadius: '12px',
+    padding: '13px 16px',
+    backgroundColor: '#F5FBF7',
+    border: '1.5px solid #DDEFE3',
+    color: '#16241C',
+    fontSize: '0.95rem'
+  };
+
+  const handleFocus = (e) => {
+    e.target.style.borderColor = '#27AE60';
+    e.target.style.boxShadow = '0 0 0 4px rgba(39,174,96,0.12)';
+  };
+  const handleBlur = (e) => {
+    e.target.style.borderColor = '#DDEFE3';
+    e.target.style.boxShadow = 'none';
+  };
+
   return (
     <div
       className="container-fluid px-3 px-md-4 py-4"
-      style={{ backgroundColor: '#0B0B0B', minHeight: '100vh' }}
+      style={{ background: 'linear-gradient(160deg, #F5FBF7 0%, #EAF6EE 100%)', minHeight: '100vh' }}
     >
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8 col-xl-7">
 
           {/* Header */}
           <div className="mb-4">
+            <p
+              className="fw-bold text-uppercase mb-2"
+              style={{ color: '#27AE60', fontSize: '0.78rem', letterSpacing: '0.14em' }}
+            >
+              {isEditMode ? 'Editing request' : 'New request'}
+            </p>
 
-            <div
-              className="mb-3"
-              style={{
-                width: '64px',
-                height: '5px',
-                backgroundColor: '#FFD400',
-                borderRadius: '3px'
-              }}
-            />
-
-            <h2 className="fw-bold text-white mb-2">
-              {isEditMode ? 'Edit Leave Request' : 'Apply for Leave'}
+            <h2 className="fw-bold mb-2" style={{ color: '#16241C' }}>
+              {isEditMode ? 'Edit leave request' : 'Apply for leave'}
             </h2>
 
-            <p className="text-secondary mb-0">
+            <p className="mb-0" style={{ color: '#7F8C8D' }}>
               {isEditMode
                 ? 'Update the details of your pending leave request.'
                 : 'Fill in the form below to submit a new leave request.'}
@@ -139,23 +153,28 @@ function ApplyLeave() {
 
           {/* Card */}
           <div
-            className="card border-0 shadow-lg"
+            className="position-relative"
             style={{
-              backgroundColor: '#151515',
-              borderRadius: '22px',
-              border: '1px solid #2A2A2A'
+              backgroundColor: '#FFFFFF',
+              borderRadius: '24px',
+              border: '1px solid #DDEFE3',
+              boxShadow: '0 30px 80px -30px rgba(18,59,39,0.2)'
             }}
           >
+            <span
+              className="position-absolute rounded-circle"
+              style={{ width: 16, height: 16, background: '#F1C9AA', top: 22, right: 26 }}
+            />
 
-            <div className="card-body p-4 p-md-5">
+            <div className="p-4 p-md-5">
 
               {error && (
                 <div
                   className="alert border-0 d-flex align-items-center mb-4"
                   role="alert"
                   style={{
-                    backgroundColor: '#2A1616',
-                    color: '#FFB4B4',
+                    backgroundColor: '#FDECEA',
+                    color: '#C0392B',
                     borderRadius: '12px',
                     padding: '14px 16px'
                   }}
@@ -170,8 +189,8 @@ function ApplyLeave() {
                   className="alert border-0 d-flex align-items-center mb-4"
                   role="alert"
                   style={{
-                    backgroundColor: '#162A16',
-                    color: '#B7F7B7',
+                    backgroundColor: '#E9F8EE',
+                    color: '#1E6B45',
                     borderRadius: '12px',
                     padding: '14px 16px'
                   }}
@@ -184,28 +203,24 @@ function ApplyLeave() {
               <form onSubmit={handleSubmit}>
 
                 {/* Leave Type */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <label
-                    className="form-label fw-semibold text-white-50 small text-uppercase mb-2"
+                    className="form-label fw-semibold small mb-2"
                     htmlFor="leave-type"
+                    style={{ color: '#16241C' }}
                   >
                     Leave Type
                   </label>
 
                   <select
                     id="leave-type"
-                    className="form-select form-select-lg bg-dark text-white border-secondary"
+                    className="form-select form-select-lg shadow-none"
                     value={leaveType}
                     onChange={(e) => setLeaveType(e.target.value)}
                     required
-                    style={{
-                      borderRadius: '12px',
-                      padding: '18px 18px',
-                      backgroundColor: '#1C1C1C',
-                      borderColor: '#2A2A2A',
-                      fontSize: '1.05rem',
-                      minHeight: '60px'
-                    }}
+                    style={fieldStyle}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                   >
                     <option value="Casual Leave">Casual Leave</option>
                     <option value="Sick Leave">Sick Leave</option>
@@ -214,12 +229,13 @@ function ApplyLeave() {
                 </div>
 
                 {/* Dates */}
-                <div className="row g-4 mb-4">
+                <div className="row g-3 mb-3">
 
                   <div className="col-md-6">
                     <label
-                      className="form-label fw-semibold text-white-50 small text-uppercase mb-2"
+                      className="form-label fw-semibold small mb-2"
                       htmlFor="from-date"
+                      style={{ color: '#16241C' }}
                     >
                       From Date
                     </label>
@@ -227,27 +243,23 @@ function ApplyLeave() {
                     <input
                       id="from-date"
                       type="date"
-                      className="form-control form-control-lg bg-dark text-white border-secondary"
+                      className="form-control form-control-lg shadow-none"
                       value={fromDate}
                       onChange={(e) => setFromDate(e.target.value)}
                       min={firstDayOfMonth}
                       max={lastDayOfMonth}
                       required
-                      style={{
-                        borderRadius: '12px',
-                        padding: '18px 18px',
-                        backgroundColor: '#1C1C1C',
-                        borderColor: '#2A2A2A',
-                        fontSize: '1.05rem',
-                        minHeight: '60px'
-                      }}
+                      style={fieldStyle}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
                     />
                   </div>
 
                   <div className="col-md-6">
                     <label
-                      className="form-label fw-semibold text-white-50 small text-uppercase mb-2"
+                      className="form-label fw-semibold small mb-2"
                       htmlFor="to-date"
+                      style={{ color: '#16241C' }}
                     >
                       To Date
                     </label>
@@ -255,50 +267,41 @@ function ApplyLeave() {
                     <input
                       id="to-date"
                       type="date"
-                      className="form-control form-control-lg bg-dark text-white border-secondary"
+                      className="form-control form-control-lg shadow-none"
                       value={toDate}
                       onChange={(e) => setToDate(e.target.value)}
                       min={fromDate || firstDayOfMonth}
                       max={lastDayOfMonth}
                       required
-                      style={{
-                        borderRadius: '12px',
-                        padding: '18px 18px',
-                        backgroundColor: '#1C1C1C',
-                        borderColor: '#2A2A2A',
-                        fontSize: '1.05rem',
-                        minHeight: '60px'
-                      }}
+                      style={fieldStyle}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
                     />
                   </div>
 
                 </div>
 
                 {/* Reason */}
-                <div className="mb-5">
+                <div className="mb-4">
                   <label
-                    className="form-label fw-semibold text-white-50 small text-uppercase mb-2"
+                    className="form-label fw-semibold small mb-2"
                     htmlFor="reason"
+                    style={{ color: '#16241C' }}
                   >
                     Reason for Leave
                   </label>
 
                   <textarea
                     id="reason"
-                    className="form-control bg-dark text-white border-secondary"
+                    className="form-control shadow-none"
                     rows="5"
                     placeholder="Please provide a clear reason for your leave request..."
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     required
-                    style={{
-                      borderRadius: '12px',
-                      padding: '18px',
-                      backgroundColor: '#1C1C1C',
-                      borderColor: '#2A2A2A',
-                      fontSize: '1rem',
-                      resize: 'vertical'
-                    }}
+                    style={{ ...fieldStyle, resize: 'vertical' }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                   />
                 </div>
 
@@ -307,15 +310,14 @@ function ApplyLeave() {
 
                   <button
                     type="submit"
-                    className="btn btn-lg fw-semibold flex-fill"
+                    className="btn btn-lg fw-semibold flex-fill border-0"
                     disabled={loading}
                     style={{
                       borderRadius: '12px',
-                      padding: '16px 20px',
-                      backgroundColor: '#FFD400',
-                      borderColor: '#FFD400',
-                      color: '#111111',
-                      minHeight: '58px'
+                      padding: '13px 16px',
+                      background: 'linear-gradient(180deg, #2F9E68, #1E6B45)',
+                      color: '#FFFFFF',
+                      boxShadow: '0 12px 24px -10px rgba(30,107,69,0.55)'
                     }}
                   >
                     {loading ? (
@@ -324,7 +326,7 @@ function ApplyLeave() {
                           className="spinner-border spinner-border-sm me-2"
                           role="status"
                           aria-hidden="true"
-                          style={{ color: '#111111' }}
+                          style={{ color: '#FFFFFF' }}
                         />
                         Saving...
                       </span>
@@ -339,11 +341,10 @@ function ApplyLeave() {
                     onClick={() => navigate('/my-leaves')}
                     style={{
                       borderRadius: '12px',
-                      padding: '16px 20px',
-                      backgroundColor: '#1C1C1C',
-                      border: '1px solid #2A2A2A',
-                      color: '#F5F5F5',
-                      minHeight: '58px'
+                      padding: '13px 16px',
+                      backgroundColor: '#F5FBF7',
+                      border: '1.5px solid #DDEFE3',
+                      color: '#16241C'
                     }}
                   >
                     Cancel

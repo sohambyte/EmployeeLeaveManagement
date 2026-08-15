@@ -114,129 +114,212 @@ function AdminDashboard() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'APPROVED':
-        return <span className="badge bg-success fs-6">APPROVED</span>;
+        return (
+          <span className="badge fw-semibold" style={{ background: '#E9F8EE', color: '#1E6B45', padding: '6px 12px', borderRadius: '999px' }}>
+            Approved
+          </span>
+        );
       case 'REJECTED':
-        return <span className="badge bg-danger fs-6">REJECTED</span>;
+        return (
+          <span className="badge fw-semibold" style={{ background: '#FDECEA', color: '#C0392B', padding: '6px 12px', borderRadius: '999px' }}>
+            Rejected
+          </span>
+        );
       default:
-        return <span className="badge fs-6" style={{ backgroundColor: '#FFD700', color: '#000000' }}>PENDING</span>;
+        return (
+          <span className="badge fw-semibold" style={{ background: '#FBF3E7', color: '#B98237', padding: '6px 12px', borderRadius: '999px' }}>
+            Pending
+          </span>
+        );
     }
   };
 
+  const getRoleBadge = (role) => {
+    const isAdmin = role === 'ROLE_ADMIN' || role === 'ADMIN';
+    return (
+      <span
+        className="badge fw-semibold"
+        style={{
+          background: isAdmin ? '#EFF3FE' : '#F5FBF7',
+          color: isAdmin ? '#3457D5' : '#5B6D62',
+          padding: '5px 10px',
+          borderRadius: '999px',
+          fontSize: '0.75rem'
+        }}
+      >
+        {isAdmin ? 'Admin' : 'Employee'}
+      </span>
+    );
+  };
+
+  const statCards = [
+    { label: 'Total requests', value: total, color: '#16241C', bg: '#F5FBF7' },
+    { label: 'Pending', value: pending, color: '#B98237', bg: '#FBF3E7' },
+    { label: 'Approved', value: approved, color: '#1E6B45', bg: '#E9F8EE' },
+    { label: 'Rejected', value: rejected, color: '#C0392B', bg: '#FDECEA' }
+  ];
+
   return (
-    <div className="container-fluid px-4 py-4" style={{ backgroundColor: '#0f0f0f', color: '#ffffff', minHeight: '100vh' }}>
+    <div
+      className="container-fluid px-3 px-md-4 py-4"
+      style={{ background: 'linear-gradient(160deg, #F5FBF7 0%, #EAF6EE 100%)', minHeight: '100vh' }}
+    >
 
       {/* Welcome Banner */}
       <div
-        className="rounded-3 p-4 mb-4 text-white"
-        style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}
+        className="rounded-4 p-4 mb-4 position-relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #2F9E68 0%, #1E6B45 100%)',
+          boxShadow: '0 20px 50px -20px rgba(30,107,69,0.5)'
+        }}
       >
-        <div className="row align-items-center">
+        <span
+          className="position-absolute rounded-circle"
+          style={{ width: 140, height: 140, background: '#63C68C', opacity: 0.18, top: -50, right: -30 }}
+        />
+        <div className="row align-items-center g-3 position-relative">
           <div className="col">
-            <h2 className="fw-bold mb-1" style={{ color: '#FFD700' }}>
-              👋 Welcome, {user ? user.name : 'Admin'}!
+            <h2 className="fw-bold mb-1 text-white">
+              Welcome, {user ? user.name : 'Admin'}
             </h2>
-            <p className="mb-0" style={{ color: '#cfcfcf' }}>
+            <p className="mb-0" style={{ color: 'rgba(255,255,255,0.85)' }}>
               Manage all employee leave requests and view team members.
             </p>
           </div>
           <div className="col-auto">
-            <span className="badge fs-6 px-3 py-2" style={{ backgroundColor: '#FFD700', color: '#000000' }}>ADMIN</span>
+            <span
+              className="badge fs-6 px-3 py-2 fw-semibold"
+              style={{ background: 'rgba(255,255,255,0.2)', color: '#FFFFFF', borderRadius: '999px' }}
+            >
+              Admin
+            </span>
           </div>
         </div>
       </div>
 
       {/* Alerts */}
       {error && (
-        <div className="alert alert-danger alert-dismissible fade show" role="alert" style={{ border: '1px solid #2a2a2a' }}>
-          ⚠️ {error}
+        <div
+          className="alert d-flex align-items-center justify-content-between border-0 mb-3"
+          role="alert"
+          style={{ background: '#FDECEA', color: '#C0392B', borderRadius: '12px', padding: '14px 18px' }}
+        >
+          <span>⚠️ {error}</span>
           <button type="button" className="btn-close" onClick={() => setError('')}></button>
         </div>
       )}
       {successMsg && (
-        <div className="alert alert-success alert-dismissible fade show" role="alert" style={{ border: '1px solid #2a2a2a' }}>
-          ✅ {successMsg}
+        <div
+          className="alert d-flex align-items-center justify-content-between border-0 mb-3"
+          role="alert"
+          style={{ background: '#E9F8EE', color: '#1E6B45', borderRadius: '12px', padding: '14px 18px' }}
+        >
+          <span>✅ {successMsg}</span>
           <button type="button" className="btn-close" onClick={() => setSuccessMsg('')}></button>
         </div>
       )}
 
-      {/* Stats Cards */}
       {loading ? (
         <div className="text-center my-5">
-          <div className="spinner-border" role="status" style={{ width: '3rem', height: '3rem', color: '#FFD700' }}></div>
-          <p className="mt-3 fs-5" style={{ color: '#cfcfcf' }}>Loading leave requests...</p>
+          <div className="spinner-border" role="status" style={{ width: '3rem', height: '3rem', color: '#2F9E68' }}></div>
+          <p className="mt-3 fs-6 fw-semibold" style={{ color: '#1E6B45' }}>Loading leave requests...</p>
         </div>
       ) : (
         <>
-      
+          {/* Stat cards (from existing computed totals) */}
+          <div className="row g-3 mb-4">
+            {statCards.map((s) => (
+              <div className="col-6 col-lg-3" key={s.label}>
+                <div className="h-100 p-3 p-md-4 rounded-4" style={{ background: s.bg, border: '1px solid #DDEFE3' }}>
+                  <div className="fw-bold" style={{ fontSize: '1.9rem', color: s.color }}>{s.value}</div>
+                  <div style={{ fontSize: '0.85rem', color: '#7F8C8D' }}>{s.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
 
           {/* Quick Links Header */}
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 className="fw-bold mb-0" style={{ color: '#FFD700' }}>Recent Leave Requests</h5>
-            <div className="d-flex gap-2">
-              <Link to="/admin-leaves" className="btn btn-sm px-4" style={{ backgroundColor: '#FFD700', color: '#000000', border: '1px solid #2a2a2a', fontWeight: '600' }}>
-                View All &amp; Filter →
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+            <h5 className="fw-bold mb-0" style={{ color: '#16241C' }}>Recent Leave Requests</h5>
+            <div className="d-flex gap-2 flex-wrap">
+              <Link
+                to="/admin-leaves"
+                className="btn btn-sm px-3 fw-semibold text-decoration-none"
+                style={{ background: '#F5FBF7', color: '#1E6B45', border: '1.5px solid #DDEFE3', borderRadius: '10px' }}
+              >
+                View all &amp; filter →
               </Link>
-              <Link to="/admin-employees" className="btn btn-sm px-4" style={{ backgroundColor: '#FFD700', color: '#000000', border: '1px solid #2a2a2a', fontWeight: '600' }}>
-                View All Employees →
+              <Link
+                to="/admin-employees"
+                className="btn btn-sm px-3 fw-semibold text-decoration-none border-0"
+                style={{ background: 'linear-gradient(180deg, #2F9E68, #1E6B45)', color: '#FFFFFF', borderRadius: '10px' }}
+              >
+                View all employees →
               </Link>
             </div>
           </div>
 
           {/* Recent leaves table (latest 10) */}
           {leaves.length === 0 ? (
-            <div className="card border-0 shadow-sm text-center p-5 mb-5" style={{ borderRadius: '12px', backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-              <h5 className="mb-0" style={{ color: '#cfcfcf' }}>No leave requests found.</h5>
+            <div className="text-center p-5 mb-5" style={{ borderRadius: '20px', background: '#FFFFFF', border: '1px solid #DDEFE3' }}>
+              <h5 className="mb-0 fw-bold" style={{ color: '#16241C' }}>No leave requests found</h5>
             </div>
           ) : (
-            <div className="card border-0 shadow-sm mb-5" style={{ borderRadius: '12px', backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', overflow: 'hidden' }}>
+            <div className="overflow-hidden mb-5" style={{ borderRadius: '20px', background: '#FFFFFF', border: '1px solid #DDEFE3' }}>
               <div className="table-responsive">
-                <table className="table align-middle mb-0" style={{ color: '#000000' }}>
-                  <thead style={{ background: '#FFD700', color: '#000000' }}>
+                <table className="table align-middle mb-0">
+                  <thead style={{ background: '#F5FBF7' }}>
                     <tr>
-                      <th className="ps-4" style={{ color: '#000000', borderBottom: '1px solid #2a2a2a' }}>Employee</th>
-                      <th style={{ color: '#000000', borderBottom: '1px solid #2a2a2a' }}>Leave Type</th>
-                      <th style={{ color: '#000000', borderBottom: '1px solid #2a2a2a' }}>From</th>
-                      <th style={{ color: '#000000', borderBottom: '1px solid #2a2a2a' }}>To</th>
-                      <th style={{ color: '#000000', borderBottom: '1px solid #2a2a2a' }}>Reason</th>
-                      <th style={{ color: '#000000', borderBottom: '1px solid #2a2a2a' }}>Status</th>
-                      <th className="pe-4" style={{ color: '#000000', borderBottom: '1px solid #2a2a2a' }}>Actions</th>
+                      <th className="ps-4 py-3 fw-semibold" style={{ color: '#16241C', border: 'none' }}>Employee</th>
+                      <th className="py-3 fw-semibold" style={{ color: '#16241C', border: 'none' }}>Leave Type</th>
+                      <th className="py-3 fw-semibold" style={{ color: '#16241C', border: 'none' }}>From</th>
+                      <th className="py-3 fw-semibold" style={{ color: '#16241C', border: 'none' }}>To</th>
+                      <th className="py-3 fw-semibold" style={{ color: '#16241C', border: 'none' }}>Reason</th>
+                      <th className="py-3 fw-semibold" style={{ color: '#16241C', border: 'none' }}>Status</th>
+                      <th className="pe-4 py-3 fw-semibold" style={{ color: '#16241C', border: 'none' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {leaves.slice(0, 10).map((leave) => (
-                      <tr key={leave.id} style={{ borderBottom: '1px solid #2a2a2a', color: '#000000' }}>
-                        <td className="ps-4" style={{ color: '#000000' }}>
-                          <div className="fw-semibold" style={{ color: '#000000' }}>{leave.userName}</div>
-                          <small style={{ color: '#000000' }}>{leave.userEmail}</small>
+                      <tr key={leave.id}>
+                        <td className="ps-4">
+                          <div className="fw-semibold" style={{ color: '#16241C' }}>{leave.userName}</div>
+                          <small style={{ color: '#7F8C8D' }}>{leave.userEmail}</small>
                         </td>
-                        <td style={{ color: '#000000' }}>
-                          <span className="badge" style={{ backgroundColor: '#2a2a2a', color: '#ffffff', border: '1px solid #2a2a2a' }}>{leave.leaveType}</span>
+                        <td>
+                          <span
+                            className="badge fw-semibold"
+                            style={{ background: '#F5FBF7', color: '#16241C', border: '1px solid #DDEFE3', padding: '5px 10px', borderRadius: '8px' }}
+                          >
+                            {leave.leaveType}
+                          </span>
                         </td>
-                        <td style={{ color: '#000000' }}>{leave.fromDate}</td>
-                        <td style={{ color: '#000000' }}>{leave.toDate}</td>
-                        <td style={{ maxWidth: '180px', color: '#000000' }}>
-                          <span className="text-truncate d-block" style={{ color: '#000000' }}>{leave.reason}</span>
+                        <td style={{ color: '#5B6D62' }}>{leave.fromDate}</td>
+                        <td style={{ color: '#5B6D62' }}>{leave.toDate}</td>
+                        <td style={{ maxWidth: '180px' }}>
+                          <span className="text-truncate d-block" style={{ color: '#5B6D62' }}>{leave.reason}</span>
                         </td>
                         <td>{getStatusBadge(leave.status)}</td>
                         <td className="pe-4">
-                          {/* Show Approve/Reject ONLY for PENDING requests */}
                           {leave.status === 'PENDING' ? (
-                            <div className="btn-group btn-group-sm">
+                            <div className="d-flex gap-2">
                               <button
-                                className="btn btn-success"
+                                className="btn btn-sm fw-semibold border-0"
+                                style={{ background: '#E9F8EE', color: '#1E6B45', borderRadius: '8px', padding: '6px 12px' }}
                                 onClick={() => handleStatusUpdate(leave.id, 'APPROVED')}
                               >
                                 Approve
                               </button>
                               <button
-                                className="btn btn-danger"
+                                className="btn btn-sm fw-semibold"
+                                style={{ background: 'transparent', color: '#C0392B', border: '1.5px solid #F3C7C0', borderRadius: '8px', padding: '6px 12px' }}
                                 onClick={() => handleStatusUpdate(leave.id, 'REJECTED')}
                               >
                                 Reject
                               </button>
                             </div>
                           ) : (
-                            <span className="small" style={{ color: '#000000' }}>—</span>
+                            <span className="small" style={{ color: '#A6B3AB' }}>—</span>
                           )}
                         </td>
                       </tr>
@@ -245,8 +328,8 @@ function AdminDashboard() {
                 </table>
               </div>
               {leaves.length > 10 && (
-                <div className="card-footer text-center bg-transparent border-0 py-3" style={{ borderTop: '1px solid #2a2a2a' }}>
-                  <Link to="/admin-leaves" className="btn btn-link fw-semibold" style={{ color: '#FFD700', textDecoration: 'none' }}>
+                <div className="text-center py-3" style={{ borderTop: '1px solid #EAF2EC' }}>
+                  <Link to="/admin-leaves" className="btn btn-link fw-semibold text-decoration-none" style={{ color: '#1E6B45' }}>
                     View all {leaves.length} requests →
                   </Link>
                 </div>
@@ -256,41 +339,8 @@ function AdminDashboard() {
         </>
       )}
 
-      {/* All Employees Section */}
-      <div className="mt-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 className="fw-bold mb-0" style={{ color: '#FFD700' }}>All Employees</h4>
-          <div className="d-flex align-items-center gap-3">
-            <span className="badge fs-6 px-3 py-2" style={{ backgroundColor: '#FFD700', color: '#000000' }}>
-              Total Employees: {employees.length}
-            </span>
-          
-          </div>
-        </div>
 
-        {employeesError && (
-          <div className="alert alert-danger" role="alert" style={{ border: '1px solid #2a2a2a' }}>
-            ⚠️ {employeesError}
-          </div>
-        )}
 
-        {employeesLoading ? (
-          <div className="text-center my-4">
-            <div className="spinner-border" role="status" style={{ color: '#FFD700' }}></div>
-            <p className="mt-2" style={{ color: '#cfcfcf' }}>Loading employees list...</p>
-          </div>
-        ) : employees.length === 0 ? (
-          <div className="card border-0 shadow-sm text-center p-4" style={{ borderRadius: '12px', backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-            <h6 className="mb-0" style={{ color: '#cfcfcf' }}>No employees found.</h6>
-          </div>
-        ) : (
-          <div className="card border-0 shadow-sm" style={{ borderRadius: '12px', backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-            <div className="table-responsive">
-              
-            </div>
-          </div>
-        )}
-      </div>
 
     </div>
   );

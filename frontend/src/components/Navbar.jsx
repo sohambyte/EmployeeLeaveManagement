@@ -18,15 +18,15 @@ function Navbar() {
       showCancelButton: true,
       confirmButtonText: 'Yes, logout',
       cancelButtonText: 'Cancel',
-      background: '#151515',
-      color: '#F5F5F5',
-      confirmButtonColor: '#FFD400',
-      cancelButtonColor: '#2A2A2A',
+      background: '#ffffff',
+      color: '#16241C',
+      confirmButtonColor: '#2F9E68',
+      cancelButtonColor: '#DDEFE3',
       reverseButtons: true,
       customClass: {
         popup: 'rounded-4',
         confirmButton: 'fw-semibold px-4 py-2',
-        cancelButton: 'fw-semibold px-4 py-2'
+        cancelButton: 'fw-semibold px-4 py-2 text-dark'
       }
     });
 
@@ -42,8 +42,8 @@ function Navbar() {
         showConfirmButton: false,
         timer: 1800,
         timerProgressBar: true,
-        background: '#151515',
-        color: '#F5F5F5'
+        background: '#ffffff',
+        color: '#16241C'
       });
 
       navigate('/login');
@@ -58,39 +58,43 @@ function Navbar() {
   const isAdmin = user && (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN');
 
   const getNavClass = (path) =>
-    `nav-link fs-5 px-3 py-3 rounded-3 transition ${
+    `nav-link fs-6 px-3 py-2 rounded-3 transition fw-semibold ${
       location.pathname === path
-        ? 'fw-bold text-warning bg-dark'
-        : 'text-white-50'
+        ? 'active-nav-link'
+        : 'inactive-nav-link'
     }`;
 
   return (
     <nav
-      className="navbar navbar-expand-lg navbar-dark shadow-lg"
+      className="navbar navbar-expand-lg shadow-sm"
       style={{
-        minHeight: '92px',
-        backgroundColor: '#151515',
-        borderBottom: '1px solid #2A2A2A'
+        minHeight: '80px',
+        backgroundColor: '#FFFFFF',
+        borderBottom: '1px solid #DDEFE3'
       }}
     >
-      <div className="container-fluid px-4 px-lg-5 py-3">
+      <style>{`
+        .active-nav-link { color: #1E6B45 !important; background-color: #EAF6EE; }
+        .inactive-nav-link { color: #5B6D62 !important; }
+        .inactive-nav-link:hover { color: #1E6B45 !important; background-color: #F5FBF7; }
+      `}</style>
+      <div className="container-fluid px-3 px-lg-5 py-2">
 
         {/* Brand */}
         <Link
-          className="navbar-brand fw-bold me-lg-5 d-flex align-items-center gap-3"
+          className="navbar-brand fw-bold me-lg-5 d-flex align-items-center gap-2"
           to={isAdmin ? '/admin-dashboard' : '/dashboard'}
-          style={{ fontSize: '1.75rem' }}
+          style={{ fontSize: '1.35rem' }}
         >
           <span
-            style={{
-              width: '18px',
-              height: '28px',
-              border: '3px solid #FFD400',
-              borderRadius: '2px',
-              display: 'inline-block'
-            }}
-          />
-          <span className="text-white">Leave Management</span>
+            className="d-flex align-items-center justify-content-center rounded-2"
+            style={{ width: 32, height: 32, background: '#2F9E68' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C12 2 6 8 6 14a6 6 0 0012 0c0-6-6-12-6-12z" fill="#fff" />
+            </svg>
+          </span>
+          <span style={{ color: '#16241C' }}>Leave Management</span>
         </Link>
 
         {/* Mobile toggle */}
@@ -111,22 +115,22 @@ function Navbar() {
 
           {/* Employee Navigation */}
           {!isAdmin && (
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-2 gap-lg-3">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-1 gap-lg-2">
               <li className="nav-item">
                 <Link className={getNavClass('/dashboard')} to="/dashboard">
-                  📋 Dashboard
+                  Dashboard
                 </Link>
               </li>
 
               <li className="nav-item">
                 <Link className={getNavClass('/apply-leave')} to="/apply-leave">
-                  ➕ Apply Leave
+                  Apply Leave
                 </Link>
               </li>
 
               <li className="nav-item">
                 <Link className={getNavClass('/my-leaves')} to="/my-leaves">
-                  📄 My Leaves
+                  My Leaves
                 </Link>
               </li>
             </ul>
@@ -134,61 +138,61 @@ function Navbar() {
 
           {/* Admin Navigation */}
           {isAdmin && (
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-2 gap-lg-3">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-1 gap-lg-2">
               <li className="nav-item">
                 <Link className={getNavClass('/admin-dashboard')} to="/admin-dashboard">
-                  📊 Dashboard
+                  Dashboard
                 </Link>
               </li>
 
               <li className="nav-item">
                 <Link className={getNavClass('/admin-leaves')} to="/admin-leaves">
-                  📋 All Leave Requests
+                  All Leave Requests
                 </Link>
               </li>
 
               <li className="nav-item">
                 <Link className={getNavClass('/admin-employees')} to="/admin-employees">
-                  👥 All Employees
+                  All Employees
                 </Link>
               </li>
             </ul>
           )}
 
           {/* User Info + Logout */}
-          <div className="d-flex align-items-center gap-4 ms-auto mt-3 mt-lg-0 py-1 flex-wrap justify-content-end">
+          <div className="d-flex align-items-center gap-3 ms-auto mt-3 mt-lg-0 py-1 flex-wrap justify-content-end">
 
             {user && (
-              <div className="text-end d-none d-md-block me-2">
-                <div className="fw-semibold text-white fs-5">
+              <div className="text-end d-none d-md-block me-1">
+                <div className="fw-semibold" style={{ color: '#16241C', fontSize: '0.95rem' }}>
                   {user.name}
                 </div>
 
                 <span
-                  className="badge mt-1"
+                  className="badge mt-1 fw-semibold"
                   style={{
-                    backgroundColor: isAdmin ? '#FFD400' : '#2A2A2A',
-                    color: isAdmin ? '#111111' : '#F5F5F5',
-                    fontSize: '0.75rem',
-                    padding: '6px 10px',
-                    borderRadius: '8px'
+                    backgroundColor: isAdmin ? '#EFF3FE' : '#F5FBF7',
+                    color: isAdmin ? '#3457D5' : '#5B6D62',
+                    border: isAdmin ? 'none' : '1px solid #DDEFE3',
+                    fontSize: '0.7rem',
+                    padding: '5px 10px',
+                    borderRadius: '999px'
                   }}
                 >
-                  {isAdmin ? 'ADMIN' : 'EMPLOYEE'}
+                  {isAdmin ? 'Admin' : 'Employee'}
                 </span>
               </div>
             )}
 
             <button
-              className="btn fw-semibold fs-6 px-4 py-3"
+              className="btn fw-semibold px-4 py-2 border-0"
               onClick={handleLogout}
               id="logout-btn"
               style={{
-                borderRadius: '12px',
-                backgroundColor: '#FFD400',
-                border: '1px solid #FFD400',
-                color: '#111111',
-                minWidth: '110px'
+                borderRadius: '10px',
+                background: 'linear-gradient(180deg, #2F9E68, #1E6B45)',
+                color: '#FFFFFF',
+                minWidth: '100px'
               }}
             >
               Logout

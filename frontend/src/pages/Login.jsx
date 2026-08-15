@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
+import Swal from 'sweetalert2';
 
 function Login() {
   const navigate = useNavigate();
@@ -163,7 +164,19 @@ function Login() {
             </div>
 
             <div className="d-flex justify-content-end mb-3">
-              <a href="#" style={{ color: '#1E6B45', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  Swal.fire({
+                    title: 'Forgot Password?',
+                    text: 'Please contact the administrator to change or reset your password.',
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                  });
+                }}
+                style={{ color: '#1E6B45', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}
+              >
                 Forgot password?
               </a>
             </div>

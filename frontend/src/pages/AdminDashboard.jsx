@@ -226,17 +226,7 @@ function AdminDashboard() {
         </div>
       ) : (
         <>
-          {/* Stat cards (from existing computed totals) */}
-          <div className="row g-3 mb-4">
-            {statCards.map((s) => (
-              <div className="col-6 col-lg-3" key={s.label}>
-                <div className="h-100 p-3 p-md-4 rounded-4" style={{ background: s.bg, border: '1px solid #DDEFE3' }}>
-                  <div className="fw-bold" style={{ fontSize: '1.9rem', color: s.color }}>{s.value}</div>
-                  <div style={{ fontSize: '0.85rem', color: '#7F8C8D' }}>{s.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+
 
           {/* Quick Links Header */}
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">

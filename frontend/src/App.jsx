@@ -1,5 +1,5 @@
-    import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -10,14 +10,73 @@ import ApplyLeave from './pages/ApplyLeave';
 import MyLeaves from './pages/MyLeaves';
 import AdminLeaves from './pages/AdminLeaves';
 import AdminEmployees from './pages/AdminEmployees';
-import { useEffect } from 'react';
+import { setNavigate, triggerSessionExpired } from './api';
+
+function SessionManager() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const tokenRef = useRef(null);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      tokenRef.current = null;
+      return;
+    }
+
+    if (tokenRef.current === token && timerRef.current) {
+      return;
+    }
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    tokenRef.current = token;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload || !payload.exp) return;
+
+      const expiryTime = payload.exp * 1000;
+      const currentTime = Date.now();
+      const remainingTime = expiryTime - currentTime;
+
+      if (remainingTime <= 0) {
+        triggerSessionExpired();
+        return;
+      }
+
+      timerRef.current = setTimeout(() => {
+        timerRef.current = null;
+        triggerSessionExpired();
+      }, remainingTime);
+    } catch (error) {
+      console.error('Invalid token', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
+  }, [location.pathname]);
+
+  return null;
+}
+
 // Helper component to redirect to the correct dashboard based on role
 function DefaultRedirect() {
   const token = localStorage.getItem('token');
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
-  useEffect(() => { const token = localStorage.getItem('token'); if (!token) return; try { const payload = JSON.parse(atob(token.split('.')[1])); const expiryTime = payload.exp * 1000; // convert to milliseconds 
-  const currentTime = Date.now(); const remainingTime = expiryTime - currentTime; console.log('Token expires at:', new Date(expiryTime)); console.log('Remaining ms:', remainingTime); if (remainingTime <= 0) { localStorage.removeItem('token'); localStorage.removeItem('user'); Swal.fire({ icon: 'warning', title: 'Session Expired', text: 'Please login again.', confirmButtonColor: '#FFD700' }).then(() => { window.location.href = '/login'; }); return; } const timer = setTimeout(() => { localStorage.removeItem('token'); localStorage.removeItem('user'); Swal.fire({ icon: 'warning', title: 'Session Expired', text: 'Please login again.', confirmButtonColor: '#FFD700' }).then(() => { window.location.href = '/login'; }); }, remainingTime); return () => clearTimeout(timer); } catch (error) { console.error('Invalid token', error); localStorage.removeItem('token'); localStorage.removeItem('user'); } }, []);
 
   if (!token || !user) {
     return <Navigate to="/login" replace />;
@@ -30,6 +89,7 @@ function DefaultRedirect() {
 function App() {
   return (
     <Router>
+      <SessionManager />
       <div className="min-vh-100 bg-light">
         <Navbar />
         <Routes>

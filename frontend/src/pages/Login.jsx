@@ -294,9 +294,8 @@ function Login() {
 
           <p className="text-center mt-4 mb-0" style={{ fontSize: '0.9rem', color: '#7F8C8D', maxWidth: 260, lineHeight: 1.6 }}>
             <strong style={{ display: 'block', color: '#16241C', fontSize: '1rem', marginBottom: 6 }}>
-              Time off, tracked simply.
-            </strong>
-            Manage team requests, track balances, and keep operations running smoothly.
+Employee LeaveManagement System            </strong>
+
           </p>
         </div>
       </div>

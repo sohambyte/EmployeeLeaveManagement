@@ -1,6 +1,7 @@
 package com.leavemanagement.service;
 
 import com.leavemanagement.dto.LeaveRequestDto;
+import com.leavemanagement.dto.StatusUpdateRequest;
 import com.leavemanagement.entity.LeaveRequest;
 import com.leavemanagement.entity.User;
 import com.leavemanagement.exception.BadRequestException;
@@ -10,6 +11,7 @@ import com.leavemanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,8 @@ public class LeaveService {
                 leave.getLeaveType(),
                 leave.getFromDate(),
                 leave.getToDate(),
+                leave.getRequestedFromDate(),
+                leave.getRequestedToDate(),
                 leave.getReason(),
                 leave.getStatus(),
                 leave.getCreatedAt()
@@ -57,11 +61,17 @@ public class LeaveService {
 
         User user = getUserByEmail(userEmail);
 
+        if (leaveRequestRepository.existsOverlappingLeaveForUser(user.getId(), dto.getFromDate(), dto.getToDate())) {
+            throw new BadRequestException("Employee already has a leave request covering one or more of these dates.");
+        }
+
         LeaveRequest leave = new LeaveRequest();
         leave.setUser(user);
         leave.setLeaveType(dto.getLeaveType());
         leave.setFromDate(dto.getFromDate());
         leave.setToDate(dto.getToDate());
+        leave.setRequestedFromDate(dto.getFromDate());
+        leave.setRequestedToDate(dto.getToDate());
         leave.setReason(dto.getReason());
         leave.setStatus("PENDING");
 
@@ -89,9 +99,15 @@ public class LeaveService {
             throw new BadRequestException("From date cannot be after To date");
         }
 
+        if (leaveRequestRepository.existsOverlappingLeaveForUserExcludingId(currentUser.getId(), leaveId, dto.getFromDate(), dto.getToDate())) {
+            throw new BadRequestException("Employee already has a leave request covering one or more of these dates.");
+        }
+
         leave.setLeaveType(dto.getLeaveType());
         leave.setFromDate(dto.getFromDate());
         leave.setToDate(dto.getToDate());
+        leave.setRequestedFromDate(dto.getFromDate());
+        leave.setRequestedToDate(dto.getToDate());
         leave.setReason(dto.getReason());
 
         LeaveRequest updatedLeave = leaveRequestRepository.save(leave);
@@ -124,16 +140,84 @@ public class LeaveService {
                 .collect(Collectors.toList());
     }
 
-    public LeaveRequestDto updateLeaveStatusByAdmin(Long leaveId, String status) {
+    public LeaveRequestDto updateLeaveStatusByAdmin(Long leaveId, StatusUpdateRequest request) {
         LeaveRequest leave = leaveRequestRepository.findById(leaveId)
                 .orElseThrow(() -> new ResourceNotFoundException("Leave request not found with id: " + leaveId));
 
-        String upperStatus = status.toUpperCase().trim();
+        String upperStatus = request.getStatus() != null ? request.getStatus().toUpperCase().trim() : "";
         if (!"APPROVED".equals(upperStatus) && !"REJECTED".equals(upperStatus)) {
             throw new BadRequestException("Invalid status value. Must be APPROVED or REJECTED");
         }
 
+        if ("APPROVED".equals(upperStatus)) {
+            LocalDate approvedFrom = request.getFromDate() != null ? request.getFromDate() : leave.getFromDate();
+            LocalDate approvedTo = request.getToDate() != null ? request.getToDate() : leave.getToDate();
+
+            if (approvedFrom.isAfter(approvedTo)) {
+                throw new BadRequestException("From date cannot be after To date");
+            }
+
+            if (leaveRequestRepository.existsOverlappingLeaveForUserExcludingId(
+                    leave.getUser().getId(), leaveId, approvedFrom, approvedTo)) {
+                throw new BadRequestException("Employee already has a leave request covering one or more of these dates.");
+            }
+
+            leave.setFromDate(approvedFrom);
+            leave.setToDate(approvedTo);
+
+            if (request.getLeaveType() != null && !request.getLeaveType().isBlank()) {
+                leave.setLeaveType(request.getLeaveType());
+            }
+            if (request.getReason() != null && !request.getReason().isBlank()) {
+                leave.setReason(request.getReason());
+            }
+        }
+
         leave.setStatus(upperStatus);
+        LeaveRequest updatedLeave = leaveRequestRepository.save(leave);
+        return mapToDto(updatedLeave);
+    }
+
+    public LeaveRequestDto updateLeaveStatusByAdmin(Long leaveId, String status) {
+        StatusUpdateRequest req = new StatusUpdateRequest();
+        req.setStatus(status);
+        return updateLeaveStatusByAdmin(leaveId, req);
+    }
+
+    public LeaveRequestDto editLeaveByAdmin(Long leaveId, LeaveRequestDto dto) {
+        LeaveRequest leave = leaveRequestRepository.findById(leaveId)
+                .orElseThrow(() -> new ResourceNotFoundException("Leave request not found with id: " + leaveId));
+
+        LocalDate newFrom = dto.getFromDate() != null ? dto.getFromDate() : leave.getFromDate();
+        LocalDate newTo = dto.getToDate() != null ? dto.getToDate() : leave.getToDate();
+
+        if (newFrom.isAfter(newTo)) {
+            throw new BadRequestException("From date cannot be after To date");
+        }
+
+        if (leaveRequestRepository.existsOverlappingLeaveForUserExcludingId(
+                leave.getUser().getId(), leaveId, newFrom, newTo)) {
+            throw new BadRequestException("Employee already has a leave request covering one or more of these dates.");
+        }
+
+        leave.setFromDate(newFrom);
+        leave.setToDate(newTo);
+
+        if (dto.getLeaveType() != null && !dto.getLeaveType().isBlank()) {
+            leave.setLeaveType(dto.getLeaveType());
+        }
+
+        if (dto.getReason() != null && !dto.getReason().isBlank()) {
+            leave.setReason(dto.getReason());
+        }
+
+        if (dto.getStatus() != null && !dto.getStatus().isBlank()) {
+            String upperStatus = dto.getStatus().toUpperCase().trim();
+            if ("APPROVED".equals(upperStatus) || "REJECTED".equals(upperStatus) || "PENDING".equals(upperStatus)) {
+                leave.setStatus(upperStatus);
+            }
+        }
+
         LeaveRequest updatedLeave = leaveRequestRepository.save(leave);
         return mapToDto(updatedLeave);
     }

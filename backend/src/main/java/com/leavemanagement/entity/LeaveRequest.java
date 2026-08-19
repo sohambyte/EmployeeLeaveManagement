@@ -25,6 +25,12 @@ public class LeaveRequest {
     @Column(name = "to_date", nullable = false)
     private LocalDate toDate;
 
+    @Column(name = "requested_from_date")
+    private LocalDate requestedFromDate;
+
+    @Column(name = "requested_to_date")
+    private LocalDate requestedToDate;
+
     @Column(nullable = false)
     private String reason;
 
@@ -43,6 +49,21 @@ public class LeaveRequest {
         this.leaveType = leaveType;
         this.fromDate = fromDate;
         this.toDate = toDate;
+        this.requestedFromDate = fromDate;
+        this.requestedToDate = toDate;
+        this.reason = reason;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    public LeaveRequest(Long id, User user, String leaveType, LocalDate fromDate, LocalDate toDate, LocalDate requestedFromDate, LocalDate requestedToDate, String reason, String status, LocalDateTime createdAt) {
+        this.id = id;
+        this.user = user;
+        this.leaveType = leaveType;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.requestedFromDate = requestedFromDate;
+        this.requestedToDate = requestedToDate;
         this.reason = reason;
         this.status = status;
         this.createdAt = createdAt;
@@ -53,6 +74,12 @@ public class LeaveRequest {
         this.createdAt = LocalDateTime.now();
         if (this.status == null) {
             this.status = "PENDING";
+        }
+        if (this.requestedFromDate == null) {
+            this.requestedFromDate = this.fromDate;
+        }
+        if (this.requestedToDate == null) {
+            this.requestedToDate = this.toDate;
         }
     }
 
@@ -94,6 +121,22 @@ public class LeaveRequest {
 
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
+    }
+
+    public LocalDate getRequestedFromDate() {
+        return requestedFromDate != null ? requestedFromDate : fromDate;
+    }
+
+    public void setRequestedFromDate(LocalDate requestedFromDate) {
+        this.requestedFromDate = requestedFromDate;
+    }
+
+    public LocalDate getRequestedToDate() {
+        return requestedToDate != null ? requestedToDate : toDate;
+    }
+
+    public void setRequestedToDate(LocalDate requestedToDate) {
+        this.requestedToDate = requestedToDate;
     }
 
     public String getReason() {

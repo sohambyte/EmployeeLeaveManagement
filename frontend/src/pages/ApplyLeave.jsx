@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import api from '../api';
 
 function ApplyLeave() {
@@ -35,19 +36,30 @@ function ApplyLeave() {
     setSuccessMsg('');
 
     if (!fromDate || !toDate) {
-      setError('Both From Date and To Date are required.');
+      const msg = 'Both From Date and To Date are required.';
+      setError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: msg,
+        confirmButtonColor: '#2F9E68',
+        background: '#ffffff',
+        color: '#16241C'
+      });
       return;
     }
 
     if (fromDate > toDate) {
-      setError('From Date cannot be after To Date.');
-      return;
-    }
-
-    setError('');
-
-    if (new Date(fromDate) > new Date(toDate)) {
-      setError('From Date cannot be after To Date.');
+      const msg = 'From Date cannot be after To Date.';
+      setError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'Validation Error',
+        text: msg,
+        confirmButtonColor: '#2F9E68',
+        background: '#ffffff',
+        color: '#16241C'
+      });
       return;
     }
 
@@ -82,23 +94,39 @@ function ApplyLeave() {
 
     request
       .then(() => {
-        setSuccessMsg(
-          isEditMode
-            ? 'Leave request updated successfully!'
-            : 'Leave request submitted successfully!'
-        );
+        const msg = isEditMode
+          ? 'Leave request updated successfully!'
+          : 'Leave request submitted successfully!';
+        setSuccessMsg(msg);
 
-        setTimeout(() => {
+        Swal.fire({
+          icon: 'success',
+          title: isEditMode ? 'Leave Request Updated' : 'Leave Request Submitted',
+          text: msg,
+          timer: 1800,
+          showConfirmButton: false,
+          background: '#ffffff',
+          color: '#16241C'
+        }).then(() => {
           navigate('/my-leaves');
-        }, 1200);
+        });
       })
       .catch((err) => {
         if (err?.response?.status === 401) return;
-        if (err.response && err.response.data && err.response.data.error) {
-          setError(err.response.data.error);
-        } else {
-          setError('Failed to save leave request. Please check your inputs.');
-        }
+        const errMsg = (err.response && err.response.data && err.response.data.error)
+          ? err.response.data.error
+          : 'Failed to save leave request. Please check your inputs.';
+
+        setError(errMsg);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Application Rejected',
+          text: errMsg,
+          confirmButtonColor: '#2F9E68',
+          background: '#ffffff',
+          color: '#16241C'
+        });
       })
       .finally(() => {
         setLoading(false);

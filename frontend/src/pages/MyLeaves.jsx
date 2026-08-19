@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import api from '../api';
 
 function MyLeaves() {
@@ -37,26 +38,54 @@ function MyLeaves() {
       });
   };
 
-  const handleDelete = (id) => {
-    if (!window.confirm('Are you sure you want to cancel this pending leave request?')) {
-      return;
-    }
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: 'Cancel Leave Request?',
+      text: 'Are you sure you want to cancel this pending leave request?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel request',
+      cancelButtonText: 'No, keep it',
+      confirmButtonColor: '#C0392B',
+      cancelButtonColor: '#DDEFE3',
+      background: '#ffffff',
+      color: '#16241C',
+      reverseButtons: true
+    });
+
+    if (!result.isConfirmed) return;
+
     const token = localStorage.getItem('token');
 
     api.delete(`http://localhost:8080/api/leaves/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
-        setSuccessMsg('Leave request cancelled successfully.');
+        Swal.fire({
+          icon: 'success',
+          title: 'Cancelled',
+          text: 'Leave request cancelled successfully.',
+          timer: 1800,
+          showConfirmButton: false,
+          background: '#ffffff',
+          color: '#16241C'
+        });
         fetchMyLeaves();
       })
       .catch((err) => {
         if (err?.response?.status === 401) return;
-        if (err.response && err.response.data && err.response.data.error) {
-          setError(err.response.data.error);
-        } else {
-          setError('Failed to cancel leave request.');
-        }
+        const errMsg = (err.response && err.response.data && err.response.data.error)
+          ? err.response.data.error
+          : 'Failed to cancel leave request.';
+        setError(errMsg);
+        Swal.fire({
+          icon: 'error',
+          title: 'Action Failed',
+          text: errMsg,
+          confirmButtonColor: '#2F9E68',
+          background: '#ffffff',
+          color: '#16241C'
+        });
       });
   };
 
@@ -70,7 +99,6 @@ function MyLeaves() {
     return matchesStatus && matchesType;
   });
 
-  // Distinct leave types present in the data, for the type filter options
   const leaveTypes = Array.from(new Set(leaves.map((l) => l.leaveType))).filter(Boolean);
 
   const getStatusBadge = (status) => {
@@ -119,7 +147,6 @@ function MyLeaves() {
       className="container-fluid px-3 px-md-4 py-4"
       style={{ background: 'linear-gradient(160deg, #F5FBF7 0%, #EAF6EE 100%)', minHeight: '100vh' }}
     >
-
       {/* Page Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
@@ -277,47 +304,72 @@ function MyLeaves() {
               </thead>
 
               <tbody>
-                {filteredLeaves.map((leave) => (
-                  <tr key={leave.id}>
-                    <td className="ps-4 fw-semibold" style={{ color: '#16241C' }}>{leave.leaveType}</td>
+                {filteredLeaves.map((leave) => {
+                  const reqFrom = leave.requestedFromDate || leave.fromDate;
+                  const reqTo = leave.requestedToDate || leave.toDate;
+                  const isModified = leave.status === 'APPROVED' && (reqFrom !== leave.fromDate || reqTo !== leave.toDate);
 
-                    <td style={{ color: '#5B6D62' }}>{leave.fromDate}</td>
+                  return (
+                    <tr key={leave.id}>
+                      <td className="ps-4 fw-semibold" style={{ color: '#16241C' }}>{leave.leaveType}</td>
 
-                    <td style={{ color: '#5B6D62' }}>{leave.toDate}</td>
+                      <td style={{ color: '#5B6D62' }}>
+                        <div>{leave.fromDate}</div>
+                        {isModified && (
+                          <div style={{ fontSize: '0.75rem', color: '#7F8C8D' }}>
+                            (Req: {reqFrom})
+                          </div>
+                        )}
+                      </td>
 
-                    <td style={{ maxWidth: '250px' }}>
-                      <span className="text-truncate d-block" title={leave.reason} style={{ color: '#5B6D62' }}>
-                        {leave.reason}
-                      </span>
-                    </td>
+                      <td style={{ color: '#5B6D62' }}>
+                        <div>{leave.toDate}</div>
+                        {isModified && (
+                          <div style={{ fontSize: '0.75rem', color: '#7F8C8D' }}>
+                            (Req: {reqTo})
+                          </div>
+                        )}
+                      </td>
 
-                    <td>{getStatusBadge(leave.status)}</td>
+                      <td style={{ maxWidth: '250px' }}>
+                        <span className="text-truncate d-block" title={leave.reason} style={{ color: '#5B6D62' }}>
+                          {leave.reason}
+                        </span>
+                        {isModified && (
+                          <span className="badge" style={{ background: '#FBF3E7', color: '#B98237', fontSize: '0.7rem' }}>
+                            Partially Approved
+                          </span>
+                        )}
+                      </td>
 
-                    <td className="pe-4">
-                      {leave.status === 'PENDING' ? (
-                        <div className="d-flex gap-2">
-                          <button
-                            className="btn btn-sm fw-semibold border-0"
-                            style={{ background: '#EAF6EE', color: '#1E6B45', borderRadius: '8px', padding: '6px 12px' }}
-                            onClick={() => handleEdit(leave)}
-                          >
-                            Edit
-                          </button>
+                      <td>{getStatusBadge(leave.status)}</td>
 
-                          <button
-                            className="btn btn-sm fw-semibold"
-                            style={{ background: 'transparent', color: '#C0392B', border: '1.5px solid #F3C7C0', borderRadius: '8px', padding: '6px 12px' }}
-                            onClick={() => handleDelete(leave.id)}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="small" style={{ color: '#A6B3AB' }}>No actions</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      <td className="pe-4">
+                        {leave.status === 'PENDING' ? (
+                          <div className="d-flex gap-2">
+                            <button
+                              className="btn btn-sm fw-semibold border-0"
+                              style={{ background: '#EAF6EE', color: '#1E6B45', borderRadius: '8px', padding: '6px 12px' }}
+                              onClick={() => handleEdit(leave)}
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              className="btn btn-sm fw-semibold"
+                              style={{ background: 'transparent', color: '#C0392B', border: '1.5px solid #F3C7C0', borderRadius: '8px', padding: '6px 12px' }}
+                              onClick={() => handleDelete(leave.id)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="small" style={{ color: '#A6B3AB' }}>No actions</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -21,6 +21,9 @@ public class LeaveRequestDto {
     @NotNull(message = "To date is required")
     private LocalDate toDate;
 
+    private LocalDate requestedFromDate;
+    private LocalDate requestedToDate;
+
     @NotBlank(message = "Reason is required")
     private String reason;
 
@@ -38,6 +41,23 @@ public class LeaveRequestDto {
         this.leaveType = leaveType;
         this.fromDate = fromDate;
         this.toDate = toDate;
+        this.requestedFromDate = fromDate;
+        this.requestedToDate = toDate;
+        this.reason = reason;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    public LeaveRequestDto(Long id, Long userId, String userName, String userEmail, String leaveType, LocalDate fromDate, LocalDate toDate, LocalDate requestedFromDate, LocalDate requestedToDate, String reason, String status, LocalDateTime createdAt) {
+        this.id = id;
+        this.userId = userId;
+        this.userName = userName;
+        this.userEmail = userEmail;
+        this.leaveType = leaveType;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.requestedFromDate = requestedFromDate;
+        this.requestedToDate = requestedToDate;
         this.reason = reason;
         this.status = status;
         this.createdAt = createdAt;
@@ -97,6 +117,22 @@ public class LeaveRequestDto {
 
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
+    }
+
+    public LocalDate getRequestedFromDate() {
+        return requestedFromDate;
+    }
+
+    public void setRequestedFromDate(LocalDate requestedFromDate) {
+        this.requestedFromDate = requestedFromDate;
+    }
+
+    public LocalDate getRequestedToDate() {
+        return requestedToDate;
+    }
+
+    public void setRequestedToDate(LocalDate requestedToDate) {
+        this.requestedToDate = requestedToDate;
     }
 
     public String getReason() {

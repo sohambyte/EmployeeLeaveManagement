@@ -26,7 +26,14 @@ public class AdminLeaveController {
     @PutMapping("/{id}/status")
     public ResponseEntity<LeaveRequestDto> updateStatus(@PathVariable Long id,
                                                          @Valid @RequestBody StatusUpdateRequest request) {
-        LeaveRequestDto updatedLeave = leaveService.updateLeaveStatusByAdmin(id, request.getStatus());
+        LeaveRequestDto updatedLeave = leaveService.updateLeaveStatusByAdmin(id, request);
+        return ResponseEntity.ok(updatedLeave);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LeaveRequestDto> editLeave(@PathVariable Long id,
+                                                      @Valid @RequestBody LeaveRequestDto dto) {
+        LeaveRequestDto updatedLeave = leaveService.editLeaveByAdmin(id, dto);
         return ResponseEntity.ok(updatedLeave);
     }
 }

@@ -8,8 +8,7 @@ A simple, full-stack Employee Leave Management web application built for an inte
 - **Backend**: Java 17, Spring Boot 3, Spring Web, Spring Data JPA, Spring Security, BCrypt, JWT Authentication
 - **Database**: MySQL 8.0+
 
----
-
+--
 ## 📁 Project Structure
 
 ```

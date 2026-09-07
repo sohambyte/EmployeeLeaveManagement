@@ -20,4 +20,4 @@ Thumbs.db
 # ===== Env / Secrets =====
 .env
 application-local.properties
-
+src/main/resources/application.properties

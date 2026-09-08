@@ -19,7 +19,7 @@ function Dashboard() {
     setError('');
     const token = localStorage.getItem('token');
 
-    api.get('http://localhost:8080/api/leaves', {
+    api.get('/api/leaves', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((response) => {

@@ -20,7 +20,7 @@ function AdminEmployees() {
     const token = localStorage.getItem('token');
 
     api
-      .get('http://localhost:8080/api/admin/employees', {
+      .get('/api/admin/employees', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then((response) => {
@@ -56,7 +56,7 @@ function AdminEmployees() {
         const token = localStorage.getItem('token');
 
         api
-          .delete(`http://localhost:8080/api/admin/employees/${id}`, {
+          .delete(`/api/admin/employees/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
           })
           .then(() => {

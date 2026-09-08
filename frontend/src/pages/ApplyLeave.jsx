@@ -82,12 +82,12 @@ function ApplyLeave() {
 
     const request = isEditMode
       ? api.put(
-          `http://localhost:8080/api/leaves/${editItem.id}`,
+          `/api/leaves/${editItem.id}`,
           payload,
           config
         )
       : api.post(
-          'http://localhost:8080/api/leaves',
+          '/api/leaves',
           payload,
           config
         );

@@ -29,7 +29,7 @@ function AdminLeaves() {
     setError('');
     const token = localStorage.getItem('token');
 
-    api.get('http://localhost:8080/api/admin/leaves', {
+    api.get('/api/admin/leaves', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((response) => {
@@ -97,7 +97,7 @@ function AdminLeaves() {
     };
 
     try {
-      await api.put(`http://localhost:8080/api/admin/leaves/${selectedLeave.id}/status`, payload, {
+      await api.put(`/api/admin/leaves/${selectedLeave.id}/status`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -150,7 +150,7 @@ function AdminLeaves() {
     const token = localStorage.getItem('token');
 
     try {
-      await api.put(`http://localhost:8080/api/admin/leaves/${targetLeave.id}/status`, { status: 'REJECTED' }, {
+      await api.put(`/api/admin/leaves/${targetLeave.id}/status`, { status: 'REJECTED' }, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

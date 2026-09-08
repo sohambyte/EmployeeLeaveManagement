@@ -71,7 +71,7 @@ function Register() {
 
     const payload = { name, email, password, role, adminCode: adminCode.trim() };
 
-    api.post('http://localhost:8080/api/auth/register', payload)
+    api.post('/api/auth/register', payload)
       .then((response) => {
         const { token, id, name: userName, email: userEmail, role: userRole } = response.data;
 

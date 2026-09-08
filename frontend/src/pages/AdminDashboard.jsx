@@ -25,7 +25,7 @@ function AdminDashboard() {
     setError('');
     const token = localStorage.getItem('token');
 
-    api.get('http://localhost:8080/api/admin/leaves', {
+    api.get('/api/admin/leaves', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((response) => {
@@ -45,7 +45,7 @@ function AdminDashboard() {
     setEmployeesError('');
     const token = localStorage.getItem('token');
 
-    api.get('http://localhost:8080/api/admin/employees', {
+    api.get('/api/admin/employees', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((response) => {
@@ -63,7 +63,7 @@ function AdminDashboard() {
   const handleStatusUpdate = (id, newStatus) => {
     const token = localStorage.getItem('token');
 
-    api.put(`http://localhost:8080/api/admin/leaves/${id}/status`, { status: newStatus }, {
+    api.put(`/api/admin/leaves/${id}/status`, { status: newStatus }, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
@@ -88,7 +88,7 @@ function AdminDashboard() {
     setSuccessMsg('');
     const token = localStorage.getItem('token');
 
-    api.delete(`http://localhost:8080/api/admin/employees/${id}`, {
+    api.delete(`/api/admin/employees/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {

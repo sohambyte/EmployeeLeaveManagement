@@ -15,7 +15,7 @@ function Login() {
     setError('');
     setLoading(true);
 
-    api.post('http://localhost:8080/api/auth/login', { email, password })
+    api.post('/api/auth/login', { email, password })
       .then((response) => {
         const { token, id, name, email: userEmail, role } = response.data;
 

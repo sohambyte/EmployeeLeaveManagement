@@ -23,7 +23,7 @@ function MyLeaves() {
     setError('');
     const token = localStorage.getItem('token');
 
-    api.get('http://localhost:8080/api/leaves', {
+    api.get('/api/leaves', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((response) => {
@@ -57,7 +57,7 @@ function MyLeaves() {
 
     const token = localStorage.getItem('token');
 
-    api.delete(`http://localhost:8080/api/leaves/${id}`, {
+    api.delete(`/api/leaves/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {

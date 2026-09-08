@@ -7,8 +7,10 @@ function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('ROLE_EMPLOYEE');
   const [adminCode, setAdminCode] = useState('');
+  const [showAdminCode, setShowAdminCode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [nameError, setNameError] = useState('');
@@ -261,18 +263,28 @@ function Register() {
                   Password
                 </label>
 
-                <input
-                  id="reg-password"
-                  type="password"
-                  className="form-control form-control-lg shadow-none"
-                  placeholder="At least 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  style={fieldStyle}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
-                />
+                <div className="position-relative">
+                  <input
+                    id="reg-password"
+                    type={showPassword ? 'text' : 'password'}
+                    className="form-control form-control-lg shadow-none"
+                    placeholder="At least 6 characters"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    style={{ ...fieldStyle, paddingRight: '50px' }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-sm text-decoration-none border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{ color: '#1E6B45', fontSize: '0.85rem', fontWeight: 600 }}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
               </div>
 
               {/* Role */}
@@ -313,19 +325,29 @@ function Register() {
                     Admin Code
                   </label>
 
-                  <input
-                    id="reg-admin-code"
-                    type="password"
-                    className="form-control form-control-lg shadow-none"
-                    placeholder="Enter admin registration code"
-                    value={adminCode}
-                    onChange={(e) => setAdminCode(e.target.value)}
-                    required={isAdminSelected}
-                    autoComplete="off"
-                    style={fieldStyle}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                  />
+                  <div className="position-relative">
+                    <input
+                      id="reg-admin-code"
+                      type={showAdminCode ? 'text' : 'password'}
+                      className="form-control form-control-lg shadow-none"
+                      placeholder="Enter admin registration code"
+                      value={adminCode}
+                      onChange={(e) => setAdminCode(e.target.value)}
+                      required={isAdminSelected}
+                      autoComplete="off"
+                      style={{ ...fieldStyle, paddingRight: '50px' }}
+                      onFocus={handleFocus}
+                      onBlur={handleBlur}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-sm text-decoration-none border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                      onClick={() => setShowAdminCode(!showAdminCode)}
+                      style={{ color: '#1E6B45', fontSize: '0.85rem', fontWeight: 600 }}
+                    >
+                      {showAdminCode ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
 
                   <div
                     className="mt-2 d-flex align-items-start gap-2"

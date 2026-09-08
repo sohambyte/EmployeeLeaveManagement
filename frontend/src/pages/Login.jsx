@@ -7,6 +7,7 @@ function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -142,25 +143,35 @@ function Login() {
                 Password
               </label>
 
-              <input
-                id="login-password"
-                type="password"
-                className="form-control form-control-lg shadow-none"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{
-                  borderRadius: '12px',
-                  padding: '13px 16px',
-                  backgroundColor: '#F5FBF7',
-                  border: '1.5px solid #DDEFE3',
-                  color: '#16241C',
-                  fontSize: '0.95rem'
-                }}
-                onFocus={(e) => { e.target.style.borderColor = '#27AE60'; e.target.style.boxShadow = '0 0 0 4px rgba(39,174,96,0.12)'; }}
-                onBlur={(e) => { e.target.style.borderColor = '#DDEFE3'; e.target.style.boxShadow = 'none'; }}
-              />
+              <div className="position-relative">
+                <input
+                  id="login-password"
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-control form-control-lg shadow-none"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  style={{
+                    borderRadius: '12px',
+                    padding: '13px 50px 13px 16px',
+                    backgroundColor: '#F5FBF7',
+                    border: '1.5px solid #DDEFE3',
+                    color: '#16241C',
+                    fontSize: '0.95rem'
+                  }}
+                  onFocus={(e) => { e.target.style.borderColor = '#27AE60'; e.target.style.boxShadow = '0 0 0 4px rgba(39,174,96,0.12)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#DDEFE3'; e.target.style.boxShadow = 'none'; }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-sm text-decoration-none border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ color: '#1E6B45', fontSize: '0.85rem', fontWeight: 600 }}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
             </div>
 
             <div className="d-flex justify-content-end mb-3">
